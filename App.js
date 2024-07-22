@@ -1,20 +1,47 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+/* 
+-------------------- App.js - Navigation ---------------------
+This file contains the main navigation logic for the app
+**/
 
-export default function App() {
+// Importing the necessary modules
+import "react-native-gesture-handler";
+import { createStackNavigator } from "@react-navigation/stack";
+import { NavigationContainer } from "@react-navigation/native";
+import { Image } from "react-native";
+
+// Importing the screens
+import Home from "./screens/home";
+import Login from "./screens/login";
+import SignUp from "./screens/signup";
+
+// Importing the assets
+import logoText from "./assets/logo/logo_text.png";
+
+// Creating the stack navigator
+const Stack = createStackNavigator();
+
+function LogoTitle() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <Image
+      style={{ height: 50, resizeMode: "contain" }}
+      source={logoText}
+    />
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+
+export default function App() {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator
+        screenOptions={{
+          headerTitle: (props) => <LogoTitle {...props} />,
+        }}>
+        <Stack.Screen
+          name='Signup'
+          component={SignUp}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}
