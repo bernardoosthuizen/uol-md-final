@@ -10,6 +10,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { Image, Pressable } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useEffect, useState } from "react";
+import { useAuth, AuthProvider } from "./contextProviders/authContext";
 
 
 // Importing the screens
@@ -44,7 +45,7 @@ function ProfileIcon({ navigation }) {
 }
 
 function ProtectedRoutes() {
-  const [currentUser, setCurrentUser] = useState(null);
+  const { currentUser } = useAuth();
   return (
     <Stack.Navigator>
       {currentUser ? (
@@ -67,21 +68,23 @@ function ProtectedRoutes() {
 
 export default function App() {
   return (
-    <NavigationContainer>
-      <Stack.Navigator
-        initialRouteName='SearchResults'
-        screenOptions={({ navigation }) => ({
-          headerRight: () => <ProfileIcon navigation={navigation} />,
-          headerTitle: (props) => <LogoTitle {...props} />,
-          headerBackTitleVisible: false,
-          headerTintColor: "#000",
-        })}>
-        <Stack.Screen name='Home' component={Home} />
-        <Stack.Screen name='SearchResults' component={SearchResults} />
-        <Stack.Screen name='RecipeDetails' component={RecipeDetails} />
-        <Stack.Screen name='ProtectedRoutes' component={ProtectedRoutes} />
-        <Stack.Screen name='SignUp' component={SignUp} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <AuthProvider>
+      <NavigationContainer>
+        <Stack.Navigator
+          initialRouteName='Home'
+          screenOptions={({ navigation }) => ({
+            headerRight: () => <ProfileIcon navigation={navigation} />,
+            headerTitle: (props) => <LogoTitle {...props} />,
+            headerBackTitleVisible: false,
+            headerTintColor: "#000",
+          })}>
+          <Stack.Screen name='Home' component={Home} />
+          <Stack.Screen name='SearchResults' component={SearchResults} />
+          <Stack.Screen name='RecipeDetails' component={RecipeDetails} />
+          <Stack.Screen name='ProtectedRoutes' component={ProtectedRoutes} />
+          <Stack.Screen name='SignUp' component={SignUp} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </AuthProvider>
   );
 }

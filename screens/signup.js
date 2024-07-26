@@ -20,17 +20,17 @@ import {
   Dimensions,
 } from "react-native";
 import { useState, useEffect } from "react";
-// import { auth } from "../services/firebaseConfig";
-// import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth, db } from "../services/firebaseConfig";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { Snackbar, Button } from "react-native-paper";
 // import LoadingOverlay from "../components/loadingOverlay";
-// import { useAuth } from "../contextProviders/authContext";
+import { doc, setDoc } from 'firebase/firestore'; // Import Firestore functions
 
 // Import assets
 import logoIcon from "../assets/logo/logo_icon.png";
 
 
-export default function SignUp({ navigation }) {
+const SignUp = ({ navigation }) => {
   const { width } = Dimensions.get("window");
 
   // State for name, email and password
@@ -42,8 +42,6 @@ export default function SignUp({ navigation }) {
   const [isFormValid, setIsFormValid] = useState(false);
 
   const [isLoading, setLoading] = useState(false);
-
-//   const { apiUrl } = useAuth();
 
   // Snack bar state
   const [snackBarVisible, setSnackBarVisible] = useState(false);
@@ -94,9 +92,7 @@ export default function SignUp({ navigation }) {
   };
 
   // Sign up function
-  const signUp = () => {
-    console.log("signing up");
-    setLoading(true);
+  const signUp = async () => {
     if (!isFormValid) {
       if (Object.keys(errors).length == 1) {
         const key = Object.keys(errors)[0];
@@ -113,30 +109,37 @@ export default function SignUp({ navigation }) {
       }
     }
     // Sign up with email and password from Firebase
-    // createUserWithEmailAndPassword(auth, email, password)
-    //   .then((userCredential) => {
-    //     navigation.navigate("Find Friends", { signUpFlow: true });
-    //     // Send post request to backend
-    //     // this stores the user in the neo4j, firestore and realtime databases
-    //     const user_id = userCredential.user.uid;
-    //     const userData = { name, email, user_id };
-    //     fetch(`${apiUrl}/api/create-user`, {
-    //       method: "POST",
-    //       headers: {
-    //         "Content-Type": "application/json",
-    //         "X-API-Key": process.env.EXPO_PUBLIC_CREATE_API_KEY,
-    //       },
-    //       body: JSON.stringify(userData),
-    //     });
-    //   })
-    //   .catch((error) => {
-    //     isLoading(false);
-    //     const errorCode = error.code;
-    //     const errorMessage = error.message;
-    //     setSnackBarVisible(true);
-    //     setSnackbarMessage("Failed to sign up.", errorMessage);
-    //     console.log(errorMessage);
-    //   });
+    try {
+      // Sign up with email and password from Firebase
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      await updateProfile(auth.currentUser, { displayName: name });
+      navigation.navigate("Profile");
+
+      // Write user data to Firestore
+      const user_id = userCredential.user.uid;
+      const userData = {
+        name,
+        email,
+        user_id,
+        favourites: [],
+        createdAt: new Date(),
+      };
+
+      // Create a document in Firestore
+      await setDoc(doc(db, "users", user_id), userData);
+      console.log("User data written to Firestore", userData);
+    } catch (error) {
+      setLoading(false);
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      setSnackBarVisible(true);
+      setSnackbarMessage("Failed to sign up.", errorMessage);
+      console.log(errorMessage);
+    }
   };
 
   return (
@@ -214,7 +217,7 @@ export default function SignUp({ navigation }) {
               textColor='#572F00'
               contentStyle={{ width: width * 0.8, height: 50 }}
               style={{ marginVertical: "5%" }}>
-              Sign In
+              Sign Up
             </Button>
           </View>
           {/* Snackbars - display errors to user */}
@@ -272,3 +275,5 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
 });
+
+export default SignUp;

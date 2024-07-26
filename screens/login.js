@@ -18,6 +18,8 @@ import {
   KeyboardAvoidingView,
   Dimensions,
 } from "react-native";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../services/firebaseConfig";
 import { useState, useEffect } from "react";
 import { Snackbar, Button } from "react-native-paper";
 
@@ -85,7 +87,6 @@ export default function Login({ navigation }) {
 
   // Sign in function
   const signIn = () => {
-    console.log('signing in');
     setLoading(true);
     if (!isFormValid) {
       if (Object.keys(errors).length == 1) {
@@ -103,19 +104,19 @@ export default function Login({ navigation }) {
       }
     }
     // Sign in with email and password from Firebase
-    // signInWithEmailAndPassword(auth, email, password).catch((error) => {
-    //   setLoading(false);
-    //   navigation.navigate("Login");
-    //   const errorMessage = error.message;
-    //   setSnackBarVisible(true);
-    //   if (errorMessage == "Firebase: Error (auth/invalid-email).") {
-    //     setSnackbarMessage("Wrong email. ");
-    //   } else if (errorMessage == "Firebase: Error (auth/invalid-credential).") {
-    //     setSnackbarMessage("Incorrect password.");
-    //   } else {
-    //     setSnackbarMessage(`Error logging in. ${errorMessage}`);
-    //   }
-    // });
+    signInWithEmailAndPassword(auth, email, password).catch((error) => {
+      setLoading(false);
+      navigation.navigate("Login");
+      const errorMessage = error.message;
+      setSnackBarVisible(true);
+      if (errorMessage == "Firebase: Error (auth/invalid-email).") {
+        setSnackbarMessage("Wrong email. ");
+      } else if (errorMessage == "Firebase: Error (auth/invalid-credential).") {
+        setSnackbarMessage("Incorrect password.");
+      } else {
+        setSnackbarMessage(`Error logging in. ${errorMessage}`);
+      }
+    });
   };
 
   return (
@@ -160,12 +161,14 @@ export default function Login({ navigation }) {
             <Button
               //   icon='camera'
               mode='elevated'
-              onPress={signIn}
+              onPress={() => {
+                signIn();
+              }}
               buttonColor='#FEBF00'
               borderColor='#FE8B00'
               textColor='#572F00'
-              contentStyle={{ width: width * 0.8, height: 50}}
-              style={{ marginVertical: '5%' }}>
+              contentStyle={{ width: width * 0.8, height: 50 }}
+              style={{ marginVertical: "5%" }}>
               Sign In
             </Button>
           </View>

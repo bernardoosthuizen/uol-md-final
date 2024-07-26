@@ -9,7 +9,7 @@ import { StatusBar } from "expo-status-bar";
 import { useState, useEffect } from "react";
 import { StyleSheet, Text, View, SafeAreaView, Pressable } from "react-native";
 import { Dimensions, Alert } from "react-native";
-// import { useAuth } from "../contextProviders/authContext";
+import { useAuth } from "../contextProviders/authContext";
 import { Snackbar } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
 // import LoadingOverlay from "../components/loadingOverlay";
@@ -34,8 +34,8 @@ export default function Profile() {
 
   const { width } = Dimensions.get("window");
   // Auth context
-  // const { logout, deleteAccount, resetPassword, currentUser, apiUrl } =
-    // useAuth();
+  const { logout, deleteAccount, resetPassword, currentUser } =
+    useAuth();
   // User data state
   const [userData, setUserData] = useState();
   const [isLoading, setIsLoading] = useState(true);
@@ -47,57 +47,33 @@ export default function Profile() {
   const [snackbarMessage, setSnackbarMessage] = useState("Placeholder message");
   const onDismissSnackBar = () => setSnackBarVisible(!snackBarVisible);
 
-  // useEffect(() => {
-  //   // fetch user data from backend
-  //   fetch(`${apiUrl}/api/user/${currentUser.uid}`, {
-  //     method: "GET",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //       "X-API-Key": process.env.EXPO_PUBLIC_CREATE_API_KEY,
-  //     },
-  //   })
-  //     .then((response) => {
-  //       return response.json();
-  //     })
-  //     .then((data) => {
-  //       setUserData(data);
-  //       setIsLoading(false);
-  //     })
-  //     .catch((error) => {
-  //       setSnackBarVisible(true);
-  //       setSnackbarMessage("Failed to get profile", error.message);
-  //       navigation.navigate("LoggedInRoutes", { screen: "Home" });
-  //       console.log(error);
-  //     });
-  // }, []);
-
   // Logout function
-  // const handleLogout = async () => {
-  //   try {
-  //     // function from auth context
-  //     await logout();
-  //   } catch (error) {
-  //     setSnackBarVisible(true);
-  //     setSnackbarMessage("Failed to log out", error);
-  //   }
-  // };
+  const handleLogout = async () => {
+    try {
+      // function from auth context
+      await logout();
+    } catch (error) {
+      setSnackBarVisible(true);
+      setSnackbarMessage("Failed to log out", error);
+    }
+  };
 
   // Delete account function
-  // const handleDeleteAccount = (password) => {
-  //   setIsLoading(true);
-  //   // UserId from context
-  //   const userId = currentUser.uid;
-  //   // function from auth context
-  //   deleteAccount(password)
-  //     .then(() => {
-  //       console.log("Account deleted successfully", userId);
-  //     })
-  //     .catch((error) => {
-  //       console.error("Error during account deletion:", error);
-  //       setSnackBarVisible(true);
-  //       setSnackbarMessage("Failed to delete account", error.message);
-  //     });
-  // };
+  const handleDeleteAccount = (password) => {
+    setIsLoading(true);
+    // UserId from context
+    const userId = currentUser.uid;
+    // function from auth context
+    deleteAccount(password)
+      .then(() => {
+        console.log("Account deleted successfully", userId);
+      })
+      .catch((error) => {
+        console.error("Error during account deletion:", error);
+        setSnackBarVisible(true);
+        setSnackbarMessage("Failed to delete account", error.message);
+      });
+  };
 
 
   return (
@@ -106,14 +82,20 @@ export default function Profile() {
         <Text
           style={{
             fontSize: width * 0.06,
-            fontWeight: "bold", 
-            color: "#FEBF00"
+            fontWeight: "bold",
+            color: "#FEBF00",
           }}>
-          Username
+          {currentUser?.displayName}
         </Text>
       </View>
       <View style={styles.favContainer}>
-        <Text style={{fontSize: width * 0.05, fontWeight: "bold", marginBottom: "5%", textAlign: "center"}}>
+        <Text
+          style={{
+            fontSize: width * 0.05,
+            fontWeight: "bold",
+            marginBottom: "5%",
+            textAlign: "center",
+          }}>
           Favourites
         </Text>
         <RecipeList
@@ -123,17 +105,71 @@ export default function Profile() {
         />
       </View>
       <View style={styles.linkContainer}>
-        <Pressable onPress={() => alert("This feature is not yet implemented")}>
+        <Pressable
+          onPress={() => {
+            Alert.alert("Logout", "Are you sure you want to logout?", [
+              {
+                text: "Cancel",
+                style: "cancel",
+              },
+              {
+                text: "Yes",
+                onPress: () => handleLogout(),
+              },
+            ]);
+          }}>
           <Text style={{ color: "black", textDecorationLine: "underline" }}>
             Logout
           </Text>
         </Pressable>
-        <Pressable onPress={() => alert("This feature is not yet implemented")}>
+        <Pressable
+          onPress={() => {
+            Alert.alert(
+              "Are you Sure you want to reset your password?",
+              "An email will be sent to your email address with a link to reset your password. Please enter your new password.",
+              [
+                {
+                  text: "Cancel",
+                  style: "cancel",
+                },
+                {
+                  text: "YES",
+                  onPress: () => {
+                    try {
+                      resetPassword();
+                    } catch (error) {
+                      setSnackBarVisible(true);
+                      setSnackbarMessage("Failed to reset password", error);
+                    }
+                  },
+                },
+              ],
+              "secure-text"
+            );
+          }}>
           <Text style={{ color: "black", textDecorationLine: "underline" }}>
             Reset Password
           </Text>
         </Pressable>
-        <Pressable onPress={() => alert("This feature is not yet implemented")}>
+        <Pressable
+          onPress={() => {
+            Alert.prompt(
+              "Delete Account",
+              "Are you sure you want to delete your profile? This action cannot be undone. Please enter your password to confirm.",
+              [
+                {
+                  text: "Cancel",
+                  style: "cancel",
+                },
+                {
+                  text: "Yes",
+                  style: "destructive",
+                  onPress: (password) => handleDeleteAccount(password),
+                },
+              ],
+              "secure-text"
+            );
+          }}>
           <Text style={{ color: "black", textDecorationLine: "underline" }}>
             Delete Account
           </Text>

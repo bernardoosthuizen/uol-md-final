@@ -36,7 +36,7 @@ const CustomVariant = (props) => (
             }}>
             {props.title}
           </Text>
-          <Text style={{ flex: 1, fontSize: props.width * 0.035 }}>
+          <Text style={{ flex: 1, fontSize: props.width * 0.035, color: "grey" }}>
             {props.description.join(", ")}
           </Text>
         </View>
