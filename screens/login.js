@@ -23,6 +23,9 @@ import { auth } from "../services/firebaseConfig";
 import { useState, useEffect } from "react";
 import { Snackbar, Button } from "react-native-paper";
 
+// import components
+import LoadingOverlay from "../components/loadingOverlay";
+
 // Import assets
 import logoIconText from "../assets/logo/logo_icon_text.png";
 
@@ -180,24 +183,19 @@ export default function Login({ navigation }) {
               Sign Up here.
             </Text>
           </Text>
-          {/* Snackbars - display errors to user */}
-          <Snackbar
-            visible={snackBarVisible}
-            onDismiss={onDismissSnackBar}
-            rippleColor={"#4F83A5"}
-            action={{
-              label: "Dismiss",
-              textColor: "#4F83A5",
-              onPress: () => {
-                // Do something
-              },
-            }}>
-            <Text style={{ color: "white" }}>{snackbarMessage}</Text>
-          </Snackbar>
-
           <StatusBar style='dark-content' />
         </SafeAreaView>
-        {/* <LoadingOverlay visible={isLoading} /> */}
+        <Snackbar
+          visible={snackBarVisible}
+          onDismiss={onDismissSnackBar}
+          rippleColor={"#FEBF00"}
+          action={{
+            label: "Dismiss",
+            textColor: "#FEBF00",
+          }}>
+          <Text style={{ color: "white" }}>{snackbarMessage}</Text>
+        </Snackbar>
+        <LoadingOverlay visible={isLoading} />
       </KeyboardAvoidingView>
     </TouchableWithoutFeedback>
   );

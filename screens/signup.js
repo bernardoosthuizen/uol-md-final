@@ -23,7 +23,7 @@ import { useState, useEffect } from "react";
 import { auth, db } from "../services/firebaseConfig";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { Snackbar, Button } from "react-native-paper";
-// import LoadingOverlay from "../components/loadingOverlay";
+import LoadingOverlay from "../components/loadingOverlay";
 import { doc, setDoc } from 'firebase/firestore'; // Import Firestore functions
 
 // Import assets
@@ -93,6 +93,7 @@ const SignUp = ({ navigation }) => {
 
   // Sign up function
   const signUp = async () => {
+    setLoading(true);
     if (!isFormValid) {
       if (Object.keys(errors).length == 1) {
         const key = Object.keys(errors)[0];
@@ -126,7 +127,6 @@ const SignUp = ({ navigation }) => {
         email,
         user_id,
         favourites: [],
-        createdAt: new Date(),
       };
 
       // Create a document in Firestore
@@ -220,23 +220,19 @@ const SignUp = ({ navigation }) => {
               Sign Up
             </Button>
           </View>
-          {/* Snackbars - display errors to user */}
-          <Snackbar
-            visible={snackBarVisible}
-            onDismiss={onDismissSnackBar}
-            rippleColor={"#4F83A5"}
-            action={{
-              label: "Dismiss",
-              textColor: "#4F83A5",
-              onPress: () => {
-                // Do something
-              },
-            }}>
-            <Text style={{ color: "white" }}>{snackbarMessage}</Text>
-          </Snackbar>
           <StatusBar style='dark-content' />
         </SafeAreaView>
-        {/* <LoadingOverlay visible={isLoading} /> */}
+        <Snackbar
+          visible={snackBarVisible}
+          onDismiss={onDismissSnackBar}
+          rippleColor={"#FEBF00"}
+          action={{
+            label: "Dismiss",
+            textColor: "#FEBF00",
+          }}>
+          <Text style={{ color: "white" }}>{snackbarMessage}</Text>
+        </Snackbar>
+        <LoadingOverlay visible={isLoading} />
       </KeyboardAvoidingView>
     </TouchableWithoutFeedback>
   );

@@ -24,8 +24,7 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   // State to store current user
   const [currentUser, setCurrentUser] = useState(null);
-  // State to store loading status
-  // const [loading, setLoading] = useState(true);
+  
   // Firebase auth instance
   const auth = getAuth();
 

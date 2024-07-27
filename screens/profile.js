@@ -1,44 +1,40 @@
 /* 
--------------------- SOCIAL TASKER - Home ---------------------
-This is the home screen. It is the screen that the user sees
-when they are logged in.
+-------------------- Feeder - Profile ---------------------
+This is the profile screen. It displays the user's name, favourite recipes and links to logout, reset password and delete account. If the user is not logged in the login screen is displayed.
 **/
 
 // Import necessary modules
 import { StatusBar } from "expo-status-bar";
-import { useState, useEffect } from "react";
-import { StyleSheet, Text, View, SafeAreaView, Pressable } from "react-native";
-import { Dimensions, Alert } from "react-native";
+import { useEffect, useState } from "react";
+import {
+  StyleSheet,
+  Text,
+  View,
+  SafeAreaView,
+  Pressable,
+  Dimensions,
+  Alert,
+} from "react-native";
 import { useAuth } from "../contextProviders/authContext";
 import { Snackbar } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
-// import LoadingOverlay from "../components/loadingOverlay";
+import { db } from "../services/firebaseConfig";
+import { doc, getDoc } from "firebase/firestore";
+
+// Import components
+import LoadingOverlay from "../components/loadingOverlay";
 import RecipeList from '../components/recipeList';
 
 export default function Profile() {
-
-  const recipeData = [
-    {
-      title: "Spaghetti Carbonara",
-      ingredients: ["Pasta", "Eggs", "Bacon", "Parmesan Cheese"],
-    },
-    {
-      title: "Spaghetti Carbonara",
-      ingredients: ["Pasta", "Eggs", "Bacon", "Parmesan Cheese"],
-    },
-    {
-      title: "Spaghetti Carbonara",
-      ingredients: ["Pasta", "Eggs", "Bacon", "Parmesan Cheese"],
-    },
-  ];
 
   const { width } = Dimensions.get("window");
   // Auth context
   const { logout, deleteAccount, resetPassword, currentUser } =
     useAuth();
-  // User data state
-  const [userData, setUserData] = useState();
+
   const [isLoading, setIsLoading] = useState(true);
+
+  const [recipeData, setRecipeData] = useState([]);
 
   const navigation = useNavigation();
 
@@ -47,9 +43,29 @@ export default function Profile() {
   const [snackbarMessage, setSnackbarMessage] = useState("Placeholder message");
   const onDismissSnackBar = () => setSnackBarVisible(!snackBarVisible);
 
+  // Get user favourites
+  useEffect(() => {
+    // Get user favourites
+    const userId = currentUser.uid;
+    const userRef = doc(db, "users", userId);
+    getDoc(userRef)
+      .then((docSnap) => {
+        if (docSnap.exists()) {
+          setIsLoading(false);
+          setRecipeData(docSnap.data().favourites);
+        } 
+      })
+      .catch((error) => {
+        console.error("Error getting document:", error);
+        setSnackBarVisible(true);
+        setSnackbarMessage("Failed to get user data", error.message);
+      });
+  }, []);
+
   // Logout function
   const handleLogout = async () => {
     try {
+      setIsLoading(true);
       // function from auth context
       await logout();
     } catch (error) {
@@ -85,7 +101,7 @@ export default function Profile() {
             fontWeight: "bold",
             color: "#FEBF00",
           }}>
-          {currentUser?.displayName}
+          Welcome {currentUser?.displayName}
         </Text>
       </View>
       <View style={styles.favContainer}>
@@ -98,11 +114,14 @@ export default function Profile() {
           }}>
           Favourites
         </Text>
-        <RecipeList
-          width={width}
-          recipeData={recipeData}
-          navigation={navigation}
-        />
+        {!isLoading && recipeData.length > 0 && (
+          <RecipeList
+            width={width}
+            recipeData={recipeData}
+            navigation={navigation}
+            profile={true}
+          />
+        )}
       </View>
       <View style={styles.linkContainer}>
         <Pressable
@@ -179,17 +198,14 @@ export default function Profile() {
       <Snackbar
         visible={snackBarVisible}
         onDismiss={onDismissSnackBar}
-        rippleColor={"#4F83A5"}
+        rippleColor={"#FEBF00"}
         action={{
           label: "Dismiss",
-          textColor: "#4F83A5",
-          onPress: () => {
-            // Do something
-          },
+          textColor: "#FEBF00",
         }}>
         <Text style={{ color: "white" }}>{snackbarMessage}</Text>
       </Snackbar>
-      {/* <LoadingOverlay visible={isLoading} /> */}
+      <LoadingOverlay visible={isLoading} />
       <StatusBar style='dark-content' />
     </SafeAreaView>
   );
