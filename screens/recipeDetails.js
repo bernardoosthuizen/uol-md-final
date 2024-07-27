@@ -86,7 +86,7 @@ export default function RecipeDetails({ route }) {
         image: recipeData.image,
         id: recipeData.id,
         ingredients: [],
-      }
+      };
       // Get ingredients
       recipeData.extendedIngredients.forEach((ingredient) => {
         // Save ingredient to array
@@ -96,7 +96,7 @@ export default function RecipeDetails({ route }) {
       // Save to database
       try {
         await updateDoc(doc(db, "users", currentUser.uid), {
-          favourites: arrayUnion(favourite)
+          favourites: arrayUnion(favourite),
         });
         setSnackBarVisible(true);
         setSnackbarMessage("Added to favourites");

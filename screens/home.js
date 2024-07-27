@@ -17,7 +17,7 @@ import {
   KeyboardAvoidingView,
   TextInput,
 } from "react-native";
-import { Snackbar, Button } from "react-native-paper";
+import { Button } from "react-native-paper";
 import { useState } from "react";
 
 export default function Home({ navigation }) {
@@ -35,7 +35,7 @@ export default function Home({ navigation }) {
           <Image
             source={require("../assets/logo/logo_icon.png")}
             style={{ width: width * 0.5, flex: 1, resizeMode: "contain" }}
-            alt='Feeder logo '
+            alt='Feeder logo'
           />
         </View>
         <View style={styles.searchConteiner}>

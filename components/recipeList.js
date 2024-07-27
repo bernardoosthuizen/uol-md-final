@@ -78,7 +78,7 @@ const CustomVariant = (props) => (
   />
 );
 
-export default function RecipeList({ recipeData, width, navigation, profile }) {
+export default function RecipeList({ recipeData = [], width = 0, navigation = null, profile = false }) {
   // remove the first element of the array, its and ad
   const cleanedData = profile ? recipeData : recipeData.slice(1);
 

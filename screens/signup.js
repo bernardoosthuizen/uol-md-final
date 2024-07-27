@@ -209,7 +209,7 @@ const SignUp = ({ navigation }) => {
               }}
             />
             <Button
-              //   icon='camera'
+              testID='signUpButton'
               mode='elevated'
               onPress={signUp}
               buttonColor='#FEBF00'

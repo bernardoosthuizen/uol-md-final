@@ -11,7 +11,7 @@ import ReactNativeAsyncStorage from "@react-native-async-storage/async-storage";
 
 // The configuration for Firebase
 const firebaseConfig = {
-  apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
+  apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY || "mock_key",
   authDomain: process.env.EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN,
   projectId: process.env.EXPO_PUBLIC_FIREBASE_PROJECT_ID,
   storageBucket: process.env.EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET,
@@ -29,4 +29,4 @@ const auth = initializeAuth(firebaseApp, {
   persistence: getReactNativePersistence(ReactNativeAsyncStorage),
 });
 
-module.exports = { db, auth, firebaseApp };
+module.exports = { db, auth, firebaseApp, firebaseConfig };

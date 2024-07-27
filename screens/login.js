@@ -30,8 +30,7 @@ import LoadingOverlay from "../components/loadingOverlay";
 import logoIconText from "../assets/logo/logo_icon_text.png";
 
 export default function Login({ navigation }) {
-    const width = Dimensions.get("window").width;
-//   const { isConnected } = useConnectivity();
+  const width = Dimensions.get("window").width;
 
   const [errors, setErrors] = useState({});
   const [isFormValid, setIsFormValid] = useState(false);
