@@ -20,6 +20,7 @@ import RecipeList from "../components/recipeList";
 import LoadingOverlay from '../components/loadingOverlay';
 
 export default function SearchResults({ navigation, route }) {
+  // Set up comonent state and constants
   const { width } = Dimensions.get("window");
   const [recipeData, setRecipeData] = useState([]);
   const [isLoading, setLoading] = useState(true);

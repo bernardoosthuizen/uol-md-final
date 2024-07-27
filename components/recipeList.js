@@ -15,6 +15,7 @@ import {
 } from "react-native";
 import { Cell, TableView } from "react-native-tableview-simple";
 
+// Custom cell component to display the recipe items
 const CustomVariant = (props) => (
   <Cell
     {...props}
@@ -98,7 +99,6 @@ export default function RecipeList({ recipeData, width, navigation, profile }) {
     });
   }
 
-  
   return (
     <TableView style={styles.resultsContainer}>
       <ScrollView>

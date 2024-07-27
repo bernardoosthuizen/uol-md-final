@@ -46,13 +46,6 @@ export default function Login({ navigation }) {
   const [password, onChangePassword] = useState("");
   const [isLoading, setLoading] = useState(false);
 
-//   useEffect(() => {
-//     if (!isConnected) {
-//       setSnackBarVisible(true);
-//       setSnackbarMessage("No internet connection.");
-//     }
-//   }, [isConnected]);
-
   useEffect(() => {
     // Trigger form validation when task data changes
     validateLoginData();

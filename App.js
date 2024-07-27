@@ -32,6 +32,7 @@ import logoText from "./assets/logo/logo_text.png";
 // Creating the stack navigator
 const Stack = createStackNavigator();
 
+// Component to display the logo
 function LogoTitle() {
   return (
     <Image
@@ -41,6 +42,8 @@ function LogoTitle() {
   );
 }
 
+// Component to display the profile icon and
+// wrap it in a Pressable component to navigate to the Profile screen
 function ProfileIcon({ navigation }) {
   return (
     <Pressable style={{width: "50%"}} onPress={()=>(navigation.navigate("ProtectedRoutes"))}>
@@ -49,6 +52,8 @@ function ProfileIcon({ navigation }) {
   );
 }
 
+// Component to display the protected routes
+// Checks if a user is logged in or not
 function ProtectedRoutes() {
   const { currentUser } = useAuth();
   return (
@@ -70,7 +75,8 @@ function ProtectedRoutes() {
   );
 }
 
-
+// Main navigator component
+// Contains the main navigation logic for the app
 function MainNavigator() {
   const { isConnected } = useConnectivity();
   const [snackBarVisible, setSnackBarVisible] = useState(!isConnected);
@@ -113,6 +119,8 @@ function MainNavigator() {
   );
 }
 
+// Main App component
+// Wraps the main navigator in the AuthProvider and ConnectivityProvider
 export default function App() {
   return (
     <AuthProvider>

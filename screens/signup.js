@@ -38,6 +38,7 @@ const SignUp = ({ navigation }) => {
   const [email, onChangeEmail] = useState("");
   const [password, onChangePassword] = useState("");
 
+  // Form validation errors state
   const [errors, setErrors] = useState({});
   const [isFormValid, setIsFormValid] = useState(false);
 
@@ -134,7 +135,6 @@ const SignUp = ({ navigation }) => {
       console.log("User data written to Firestore", userData);
     } catch (error) {
       setLoading(false);
-      const errorCode = error.code;
       const errorMessage = error.message;
       setSnackBarVisible(true);
       setSnackbarMessage("Failed to sign up.", errorMessage);
