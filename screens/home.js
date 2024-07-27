@@ -18,11 +18,14 @@ import {
   TextInput,
 } from "react-native";
 import { Button } from "react-native-paper";
-import { useState } from "react";
+import { useState, useRef } from "react";
+import LottieView from "lottie-react-native";
 
 export default function Home({ navigation }) {
   const { width } = Dimensions.get("window");
   const [searchQuery, setSearchQuery] = useState("");
+
+  const animationRef = (null);
 
   const handleSearch = () => {
     navigation.navigate("SearchResults", { searchQuery });
@@ -34,9 +37,29 @@ export default function Home({ navigation }) {
         <View style={styles.logoContainer}>
           <Image
             source={require("../assets/logo/logo_icon.png")}
-            style={{ width: width * 0.5, flex: 1, resizeMode: "contain" }}
+            style={{ width: width * 0.6, flex: 1, resizeMode: "contain" }}
             alt='Feeder logo'
           />
+        </View>
+        <View style={styles.ctaContainer}>
+          <Text
+            style={{
+              fontSize: width * 0.075,
+              color: "#572F00",
+              fontWeight: "bold",
+              marginBottom: "1%",
+            }}>
+            Welcome to Feeder!
+          </Text>
+          <Text
+            style={{
+              fontSize: width * 0.043,
+              color: "#572F00",
+              textAlign: "justify",
+            }}>
+            Feeder is a recipe search app that helps you find recipes based on
+            the ingredients you have at home.
+          </Text>
         </View>
         <View style={styles.searchConteiner}>
           <TextInput
@@ -62,6 +85,14 @@ export default function Home({ navigation }) {
             Feed Me!
           </Button>
         </View>
+        <LottieView
+          ref={animationRef}
+          source={require("../assets/AnimationHomePage.json")}
+          autoPlay={true}
+          loop={true}
+          style={styles.lottie}
+          resizeMode='cover'
+        />
         <StatusBar style='auto' />
       </KeyboardAvoidingView>
     </TouchableWithoutFeedback>
@@ -76,15 +107,19 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   logoContainer: {
-    flex: 3,
+    flex: 2,
     alignItems: "center",
     justifyContent: "center",
-    marginTop: 50,
+    marginTop: 30,
+  },
+  ctaContainer: {
+    flex: 2,
+    justifyContent: "center",
+    width: "80%",
   },
   searchConteiner: {
-    flex: 5,
+    flex: 6,
     alignItems: "center",
-    // justifyContent: "center",
   },
   input: {
     height: 40,
@@ -93,5 +128,14 @@ const styles = StyleSheet.create({
     padding: 10,
     borderColor: "#828282",
     borderRadius: 8,
+  },
+  lottie: {
+    position: "absolute",
+    top: "60%",
+    left: 0,
+    right: 0,
+    bottom: "-20%",
+    zIndex: 1000,
+    pointerEvents: "none",
   },
 });
