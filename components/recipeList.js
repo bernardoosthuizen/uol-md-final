@@ -84,7 +84,7 @@ export default function RecipeList({ recipeData = [], width = 0, navigation = nu
 
   if (!profile) {
     // make ingredients a string list
-    cleanedData.forEach((recipe) => {
+    cleanedData?.forEach((recipe) => {
       const allIngredients = [
         ...recipe.missedIngredients,
         ...recipe.usedIngredients,
@@ -94,7 +94,7 @@ export default function RecipeList({ recipeData = [], width = 0, navigation = nu
         .join(", ");
     });
   } else {
-    cleanedData.forEach((recipe) => {
+    cleanedData?.forEach((recipe) => {
       recipe.ingredients = recipe?.ingredients.join(", ");
     });
   }

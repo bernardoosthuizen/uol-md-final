@@ -15,6 +15,7 @@ import {
   Dimensions,
   Alert,
 } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAuth } from "../contextProviders/authContext";
 import { Snackbar } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
@@ -46,20 +47,41 @@ export default function Profile() {
   // Get user favourites
   useEffect(() => {
     // Get user favourites
-    const userId = currentUser.uid;
-    const userRef = doc(db, "users", userId);
-    getDoc(userRef)
-      .then((docSnap) => {
-        if (docSnap.exists()) {
+    // Check local storage first
+    AsyncStorage.getItem("favourites")
+      .then((value) => {
+        if (value) {
+          // Favourites found in local storage
+          setRecipeData(JSON.parse(value));
           setIsLoading(false);
-          setRecipeData(docSnap.data().favourites);
-        } 
+        } else {
+          // Favourites not found in local storage
+          // Check firestore for user favourites
+          const userId = currentUser.uid;
+          const userRef = doc(db, "users", userId);
+          getDoc(userRef)
+            .then((docSnap) => {
+              if (docSnap.exists()) {
+                // User favourites found in firestore
+                setIsLoading(false);
+                setRecipeData(docSnap.data().favourites);
+                // Save to local storage
+                AsyncStorage.setItem(
+                  "favourites",
+                  JSON.stringify(docSnap.data().favourites)
+                );
+              } else {
+                // User favourites not found in firestore
+                setIsLoading(false);
+              }
+            })
+            .catch((error) => {
+              console.error("Error getting document:", error);
+              setSnackBarVisible(true);
+              setSnackbarMessage("Failed to get user data", error.message);
+            });
+        }
       })
-      .catch((error) => {
-        console.error("Error getting document:", error);
-        setSnackBarVisible(true);
-        setSnackbarMessage("Failed to get user data", error.message);
-      });
   }, []);
 
   // Logout function
@@ -82,6 +104,7 @@ export default function Profile() {
     // function from auth context
     deleteAccount(password)
       .then(() => {
+        AsyncStorage.removeItem("favourites");
         console.log("Account deleted successfully", userId);
       })
       .catch((error) => {
@@ -121,6 +144,11 @@ export default function Profile() {
             navigation={navigation}
             profile={true}
           />
+        )}
+        {!isLoading && recipeData.length == 0 && (
+          <Text style={{ textAlign: "center", marginTop: "5%" }}>
+            No recipes found
+          </Text>
         )}
       </View>
       <View style={styles.linkContainer}>

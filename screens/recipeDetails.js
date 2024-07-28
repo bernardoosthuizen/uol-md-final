@@ -13,6 +13,7 @@ import { useAuth } from "../contextProviders/authContext";
 import { Snackbar } from "react-native-paper";
 import { doc, updateDoc, arrayUnion } from "firebase/firestore";
 import { db } from "../services/firebaseConfig";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // Import components
 import LoadingOverlay from '../components/loadingOverlay';
@@ -99,10 +100,25 @@ export default function RecipeDetails({ route }) {
         await updateDoc(doc(db, "users", currentUser.uid), {
           favourites: arrayUnion(favourite),
         });
+        // Save to local storage
+        // A bug with the mergeItem method found here: https://github.com/react-native-async-storage/async-storage/issues/699
+        // This means we have to read the current value, update it, and then save it back
+        const currentFavourites = await AsyncStorage.getItem("favourites");
+        let currentFavouritesArray = [];
+        if (currentFavourites) {
+          currentFavouritesArray = JSON.parse(currentFavourites);
+        }
+        currentFavouritesArray.push(favourite);
+        await AsyncStorage.setItem(
+          "favourites",
+          JSON.stringify(currentFavouritesArray)
+        );
+        // Show success message
         setSnackBarVisible(true);
         setSnackbarMessage("Added to favourites");
         setfavBeingAdded(false);
       } catch (error) {
+        // Show error message
         setSnackBarVisible(true);
         setSnackbarMessage("Failed to add to favourites");
         console.error("Error adding to favourites", error);
