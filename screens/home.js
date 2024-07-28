@@ -17,19 +17,73 @@ import {
   KeyboardAvoidingView,
   TextInput,
 } from "react-native";
-import { Button } from "react-native-paper";
-import { useState, useRef } from "react";
+import { Button, Snackbar } from "react-native-paper";
+import { useState, useRef, useEffect } from "react";
 import LottieView from "lottie-react-native";
 
 export default function Home({ navigation }) {
+  // Set component state and constants
   const { width } = Dimensions.get("window");
   const [searchQuery, setSearchQuery] = useState("");
 
-  const animationRef = (null);
+  // Lottie animation reference
+  const animationRef = useRef(null);
 
+  // Form validation state
+  const [errors, setErrors] = useState({});
+  const [isFormValid, setIsFormValid] = useState(false);
+
+  // Snack bar state
+  const [snackBarVisible, setSnackBarVisible] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("Placeholder message");
+  const onDismissSnackBar = () => setSnackBarVisible(!snackBarVisible);
+
+  // Handle search button press
   const handleSearch = () => {
+    if (!isFormValid) {
+      if (Object.keys(errors).length == 1) {
+        const key = Object.keys(errors)[0];
+        const errorText = errors[key];
+        setSnackBarVisible(true);
+        setSnackbarMessage(errorText);
+        return;
+      } else {
+        setSnackBarVisible(true);
+        setSnackbarMessage("Please fill out all required fields");
+        return;
+      }
+    }
     navigation.navigate("SearchResults", { searchQuery });
-  }
+  };
+
+  // Validate search query
+  const validateSearchQuery = () => {
+    let errors = {};
+
+    if (!searchQuery) {
+      // Check if search query is empty
+      errors.searchQuery = "Please enter ingredients.";
+    } else {
+      // Check if search query contains more than one word
+      const validateMultipleWords = (query) => {
+        return /(\w+[\s,]+\w+)/.test(query);
+      };
+
+      if (!validateMultipleWords(searchQuery)) {
+        errors.searchQuery =
+          "Please enter more than one word, separated by a space or comma.";
+      }
+    }
+
+    // Set the errors and update form validity
+    setErrors(errors);
+    setIsFormValid(Object.keys(errors).length === 0);
+  };
+
+  useEffect(() => {
+    // Trigger form validation when task data changes
+    validateSearchQuery();
+  }, [searchQuery]);
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
@@ -85,6 +139,7 @@ export default function Home({ navigation }) {
             Feed Me!
           </Button>
         </View>
+
         <LottieView
           ref={animationRef}
           source={require("../assets/AnimationHomePage.json")}
@@ -94,6 +149,16 @@ export default function Home({ navigation }) {
           resizeMode='cover'
         />
         <StatusBar style='auto' />
+        <Snackbar
+          visible={snackBarVisible}
+          onDismiss={onDismissSnackBar}
+          rippleColor={"#FEBF00"}
+          action={{
+            label: "Dismiss",
+            textColor: "#FEBF00",
+          }}>
+          <Text style={{ color: "white" }}>{snackbarMessage}</Text>
+        </Snackbar>
       </KeyboardAvoidingView>
     </TouchableWithoutFeedback>
   );
@@ -135,7 +200,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: "-20%",
-    zIndex: 1000,
+    zIndex: -1,
     pointerEvents: "none",
   },
 });

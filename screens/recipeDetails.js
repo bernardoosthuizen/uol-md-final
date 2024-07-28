@@ -24,6 +24,7 @@ export default function RecipeDetails({ route }) {
   const [recipeData, setRecipeData] = useState({});
   const [isLoading, setLoading] = useState(true);
   const [favBeingAdded, setfavBeingAdded] = useState(false);
+  
 
   // Snack bar state
   const [snackBarVisible, setSnackBarVisible] = useState(false);

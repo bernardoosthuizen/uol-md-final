@@ -32,6 +32,7 @@ import logoIconText from "../assets/logo/logo_icon_text.png";
 export default function Login({ navigation }) {
   const width = Dimensions.get("window").width;
 
+  // Form validation state
   const [errors, setErrors] = useState({});
   const [isFormValid, setIsFormValid] = useState(false);
 
