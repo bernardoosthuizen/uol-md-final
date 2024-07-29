@@ -100,7 +100,13 @@ export default function Login({ navigation }) {
       }
     }
     // Sign in with email and password from Firebase
-    signInWithEmailAndPassword(auth, email, password).catch((error) => {
+    signInWithEmailAndPassword(auth, email, password)
+    .then(()=>{
+      AsyncStorage.removeItem("favourites").then(() => {
+        navigation.navigate("Profile");
+      });
+    })
+    .catch((error) => {
       setLoading(false);
       navigation.navigate("Login");
       const errorMessage = error.message;

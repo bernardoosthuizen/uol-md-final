@@ -25,6 +25,7 @@ import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { Snackbar, Button } from "react-native-paper";
 import LoadingOverlay from "../components/loadingOverlay";
 import { doc, setDoc } from 'firebase/firestore'; // Import Firestore functions
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // Import assets
 import logoIcon from "../assets/logo/logo_icon.png";
@@ -119,7 +120,11 @@ const SignUp = ({ navigation }) => {
         password
       );
       await updateProfile(auth.currentUser, { displayName: name });
-      navigation.navigate("Profile");
+      AsyncStorage.removeItem("favourites")
+      .then(() => {
+        navigation.navigate("Profile");
+      });
+      
 
       // Write user data to Firestore
       const user_id = userCredential.user.uid;
