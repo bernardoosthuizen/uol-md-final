@@ -131,6 +131,7 @@ const SignUp = ({ navigation }) => {
 
       // Create a document in Firestore
       await setDoc(doc(db, "users", user_id), userData);
+      setLoading(false);
     } catch (error) {
       setLoading(false);
       const errorMessage = error.message;
