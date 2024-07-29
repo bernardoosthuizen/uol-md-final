@@ -8,7 +8,7 @@ import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View, Image, ScrollView, Dimensions, Linking } from "react-native";
 import { Button } from "react-native-paper";
 import { useEffect, useState } from 'react';
-import RenderHTML from "react-native-render-html";
+import HTMLView from "react-native-htmlview";
 import { useAuth } from "../contextProviders/authContext";
 import { Snackbar } from "react-native-paper";
 import { doc, updateDoc, arrayUnion } from "firebase/firestore";
@@ -37,12 +37,9 @@ export default function RecipeDetails({ route }) {
 
   // The summary is provided in HTML
   // Render it appropriately
+  const regex = /<b>|<\/b>|\n|\r\s*\\?>/g;
   const summaryToHtml = {
-    html: recipeData.summary || "<p>No summary available</p>",
-  };
-  // Set up styles for the HTML renderer
-  const baseStyles = {
-    textAlign: "justify",
+    html: recipeData.summary?.trim().replace(regex,'') || "<p>No summary available</p>",
   };
 
   useEffect(() => {
@@ -143,10 +140,14 @@ export default function RecipeDetails({ route }) {
         </Text>
 
         <View style={{ flexDirection: "row", padding: "5%" }}>
-          <RenderHTML
-            contentWidth={width}
-            source={summaryToHtml}
-            baseStyles={baseStyles}
+          <HTMLView
+            value={summaryToHtml.html}
+            style={{
+              flex: 1,
+              flexDirection: "row",
+              alignItems: "flex-start",
+              flexWrap: "wrap",
+            }}
           />
         </View>
 
