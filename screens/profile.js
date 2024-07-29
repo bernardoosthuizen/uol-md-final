@@ -21,22 +21,20 @@ import { Snackbar } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
 import { db } from "../services/firebaseConfig";
 import { doc, getDoc } from "firebase/firestore";
+import { useIsFocused } from "@react-navigation/native";
 
 // Import components
 import LoadingOverlay from "../components/loadingOverlay";
 import RecipeList from '../components/recipeList';
 
 export default function Profile() {
-
   const { width } = Dimensions.get("window");
   // Auth context
-  const { logout, deleteAccount, resetPassword, currentUser } =
-    useAuth();
+  const { logout, deleteAccount, resetPassword, currentUser } = useAuth();
 
   const [isLoading, setIsLoading] = useState(true);
-
+  const isVisible = useIsFocused(); // To reload every time the screen is in view
   const [recipeData, setRecipeData] = useState([]);
-
   const navigation = useNavigation();
 
   // Snack bar state
@@ -46,50 +44,53 @@ export default function Profile() {
 
   // Get user favourites
   useEffect(() => {
+    if(!currentUser) return;
     // Get user favourites
     // Check local storage first
-    AsyncStorage.getItem("favourites")
-      .then((value) => {
-        if (value) {
-          // Favourites found in local storage
-          setRecipeData(JSON.parse(value));
-          setIsLoading(false);
-        } else {
-          // Favourites not found in local storage
-          // Check firestore for user favourites
-          const userId = currentUser.uid;
-          const userRef = doc(db, "users", userId);
-          getDoc(userRef)
-            .then((docSnap) => {
-              if (docSnap.exists()) {
-                // User favourites found in firestore
-                setIsLoading(false);
-                setRecipeData(docSnap.data().favourites);
-                // Save to local storage
-                AsyncStorage.setItem(
-                  "favourites",
-                  JSON.stringify(docSnap.data().favourites)
-                );
-              } else {
-                // User favourites not found in firestore
-                setIsLoading(false);
-              }
-            })
-            .catch((error) => {
-              console.error("Error getting document:", error);
-              setSnackBarVisible(true);
-              setSnackbarMessage("Failed to get user data", error.message);
-            });
-        }
-      })
-  }, []);
+    AsyncStorage.getItem("favourites").then((value) => {
+      if (value?.length > 2) {
+        // Favourites found in local storage
+        setRecipeData(JSON.parse(value));
+        setIsLoading(false);
+      } else {
+        // Favourites not found in local storage
+        // Check firestore for user favourites
+        const userId = currentUser?.uid;
+        const userRef = doc(db, "users", userId);
+        getDoc(userRef)
+          .then((docSnap) => {
+            if (docSnap.exists()) {
+              // User favourites found in firestore
+              setIsLoading(false);
+              setRecipeData(docSnap.data().favourites);
+              // Save to local storage
+              AsyncStorage.setItem(
+                "favourites",
+                JSON.stringify(docSnap.data().favourites)
+              );
+            } else {
+              // User favourites not found in firestore
+              setIsLoading(false);
+            }
+          })
+          .catch((error) => {
+            console.error("Error getting document:", error);
+            setSnackBarVisible(true);
+            setSnackbarMessage("Failed to get user data", error.message);
+          });
+      }
+    });
+  }, [isVisible]);
 
   // Logout function
   const handleLogout = async () => {
     try {
       setIsLoading(true);
       // function from auth context
-      await logout();
+      AsyncStorage.removeItem("favourites")
+      .then(() => {
+        logout();
+      });
     } catch (error) {
       setSnackBarVisible(true);
       setSnackbarMessage("Failed to log out", error);
@@ -102,10 +103,10 @@ export default function Profile() {
     // UserId from context
     const userId = currentUser.uid;
     // function from auth context
-    deleteAccount(password)
+    
+    AsyncStorage.removeItem("favourites")
       .then(() => {
-        AsyncStorage.removeItem("favourites");
-        console.log("Account deleted successfully", userId);
+        deleteAccount(password);
       })
       .catch((error) => {
         console.error("Error during account deletion:", error);
@@ -113,7 +114,6 @@ export default function Profile() {
         setSnackbarMessage("Failed to delete account", error.message);
       });
   };
-
 
   return (
     <SafeAreaView style={styles.container}>

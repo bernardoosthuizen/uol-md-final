@@ -81,7 +81,6 @@ const CustomVariant = (props) => (
 export default function RecipeList({ recipeData = [], width = 0, navigation = null, profile = false }) {
   // remove the first element of the array, its and ad
   const cleanedData = profile ? recipeData : recipeData.slice(1);
-
   if (!profile) {
     // make ingredients a string list
     cleanedData?.forEach((recipe) => {
@@ -95,7 +94,12 @@ export default function RecipeList({ recipeData = [], width = 0, navigation = nu
     });
   } else {
     cleanedData?.forEach((recipe) => {
-      recipe.ingredients = recipe?.ingredients.join(", ");
+      if (Array.isArray(recipe.ingredients) && recipe.ingredients.length > 0) {
+        recipe.ingredients = recipe.ingredients.join(", ");
+      } else {
+        recipe.ingredients = ""; // or handle the case where ingredients are not available
+      }
+      
     });
   }
 
