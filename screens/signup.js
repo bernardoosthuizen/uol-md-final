@@ -118,8 +118,7 @@ const SignUp = ({ navigation }) => {
         email,
         password
       );
-      await updateProfile(auth.currentUser, { displayName: name });
-      
+
       // Write user data to Firestore
       const user_id = userCredential.user.uid;
       const userData = {
@@ -129,8 +128,12 @@ const SignUp = ({ navigation }) => {
         favourites: [],
       };
 
-      // Create a document in Firestore
-      await setDoc(doc(db, "users", user_id), userData);
+      // Run updateProfile and setDoc concurrently
+      await Promise.all([
+        updateProfile(auth.currentUser, { displayName: name }),
+        setDoc(doc(db, "users", user_id), userData),
+      ]);
+      navigation.navigate("ProtectedRoutes");
       setLoading(false);
     } catch (error) {
       setLoading(false);
