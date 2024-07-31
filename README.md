@@ -24,3 +24,13 @@ Alternatively, the app can also be viewed via [Expo Go](https://expo.dev/go).
 2. Scan the QR code below with the device's camera if you're using iOS or open Expo Go on Android and scan it from within the app. Or use [this link](https://expo.dev/preview/update?message=sign%20up%20flow%20fixed&updateRuntimeVersion=1.0.0&createdAt=2024-07-29T11%3A25%3A17.090Z&slug=exp&projectId=bff9e86a-41a5-4377-9e99-7ba9a71dd442&group=04e621e4-00f5-4322-a8d4-5d5153c43fee).
 
 ![Screenshot 2024-07-31 at 10 36 18 AM](https://github.com/user-attachments/assets/9b72fad3-cc27-4d6d-a75d-89468a68d784)
+
+### As an Expo Snack
+
+The support for an expo snack is not great so the following dependencies do not work:
+- [Lottie Github Issue](https://github.com/expo/snack/issues/589): used to make animations
+- [Firebase Github Issue](https://github.com/expo/snack/issues/268)
+
+The project is available on a snack [here](https://snack.expo.dev/@bernardoosthuizen/feeder), but as said does not work due to the above issues. 
+
+It is therefore recommended to view the app via [Expo Go](#expo-go)
