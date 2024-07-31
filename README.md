@@ -31,6 +31,6 @@ The support for an expo snack is not great so the following dependencies do not 
 - [Lottie Github Issue](https://github.com/expo/snack/issues/589): used to make animations
 - [Firebase Github Issue](https://github.com/expo/snack/issues/268)
 
-The project is available on a snack [here](https://snack.expo.dev/@bernardoosthuizen/feeder), but as said does not work due to the above issues. 
+The project is available on a snack [here](https://snack.expo.dev/@bernardoosthuizen/feeder), but as said, it does not work due to the above issues. 
 
 It is therefore recommended to view the app via [Expo Go](#expo-go)
